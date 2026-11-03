@@ -470,7 +470,7 @@
   }
 
   function settingsPanel() {
-    var s = S.data.settings, guest = s.pageUrl || (location.origin + location.pathname);
+    var s = S.data.settings, guest = (s.pageUrl || (location.origin + location.pathname)).replace(/[?#].*$/, '');
     openSheet('<h2>Настройки</h2><form novalidate>' + ERR +
       fld('Название страницы', inp('title', s.title, 'maxlength="80"')) +
       fld('Подзаголовок', '<textarea name="subtitle" maxlength="300">' + esc(s.subtitle) + '</textarea>') +
@@ -479,12 +479,17 @@
       fld('Адрес страницы', inp('pageUrl', s.pageUrl || (location.origin + location.pathname), 'type="url"')) +
       '<button class="btn btn-primary btn-full" type="submit">Сохранить</button></form>' +
       '<h3 style="font-family:var(--serif);font-size:22px;margin:24px 0 8px">Ссылка для гостей</h3><div class="actions"><button class="btn btn-ghost" type="button" id="copyGuest">Скопировать ссылку</button></div>' +
+      '<h3 style="font-family:var(--serif);font-size:22px;margin:24px 0 8px">Иконка владельца на iPhone</h3><p class="note" style="margin:0 0 10px">Иконка на экране «Домой» не видит вход из Safari. Нажмите кнопку, затем в Safari «Поделиться» → «На экран „Домой“».</p><div class="actions"><button class="btn btn-ghost" type="button" id="ownerIcon">Подготовить иконку владельца</button></div>' +
       '<p class="note" style="margin-top:20px">Режим владельца запомнен на этом устройстве. <button class="btn-link" type="button" id="logout">Выйти из режима владельца</button></p>', function (root) {
         wire($('form', root), 'saveSettings', function (fd) {
           return { settings: { title: String(fd.get('title') || '').trim(), subtitle: String(fd.get('subtitle') || '').trim(), currency: fd.get('currency'), showFulfilled: !!fd.get('showFulfilled'), pageUrl: String(fd.get('pageUrl') || '').trim() } };
         }, function () { closeSheet(); toast('Настройки сохранены'); });
         $('#copyGuest', root).onclick = function () { copy(guest); };
-        $('#logout', root).onclick = function () { if (confirm('Выйти из режима владельца на этом устройстве? Вернуться можно по секретной ссылке.')) { drop('wl_owner'); S.owner = null; closeSheet(); setOwnerUi(); refresh(); } };
+        $('#ownerIcon', root).onclick = function () {
+          if (standalone) { copy(location.origin + location.pathname + '?owner=' + S.owner); toast('Ссылка скопирована — откройте её в Safari'); return; }
+          location.href = location.pathname + '?owner=' + S.owner;
+        };
+        $('#logout', root).onclick = function () { if (confirm('Выйти из режима владельца на этом устройстве? Вернуться можно по секретной ссылке.')) { drop('wl_owner'); S.owner = null; if (/owner=/.test(location.search)) history.replaceState(null, '', location.pathname); closeSheet(); setOwnerUi(); refresh(); } };
       });
   }
 
@@ -538,10 +543,38 @@
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !$('#overlay').hidden) closeSheet(); });
 
   // ---------- старт ----------
+  var standalone = window.navigator.standalone === true || (window.matchMedia && matchMedia('(display-mode: standalone)').matches);
   var m = location.hash.match(/owner=([A-Za-z0-9]{20,})/);
   if (m) { save('wl_owner', m[1]); history.replaceState(null, '', location.pathname + location.search); }
+  // ?owner=… — адрес «иконки владельца». Его НЕ убираем из адреса: iPhone запоминает текущий адрес,
+  // когда нажимают «На экран Домой», а у иконки своя память, отдельная от Safari.
+  var mq = location.search.match(/[?&]owner=([A-Za-z0-9]{20,})/);
+  if (mq) {
+    save('wl_owner', mq[1]);
+    var man = document.querySelector('link[rel=manifest]'); if (man) man.remove(); // иначе iPhone возьмёт адрес из манифеста, без ключа
+    if (!standalone) setTimeout(function () {
+      openSheet('<h2>Иконка владельца</h2><p class="lead">Сейчас добавьте эту страницу на экран телефона — такая иконка будет сразу открываться в режиме владельца.</p>' +
+        '<ol style="margin:0 0 18px;padding-left:20px;line-height:1.7"><li>Внизу Safari нажмите <b>«Поделиться»</b> (квадрат со стрелкой).</li><li>Выберите <b>«На экран „Домой“»</b> → <b>«Добавить»</b>.</li><li>Старую иконку Wishlist удалите — она открывается как у гостей.</li></ol>' +
+        '<p class="note">Эта иконка — только для вашего телефона. Гостям отправляйте обычную ссылку (Настройки → «Скопировать ссылку для гостей»).</p>' +
+        '<button class="btn btn-primary btn-full" type="button" id="ok" style="margin-top:14px">Понятно</button>', function (r) { $('#ok', r).onclick = closeSheet; });
+    }, 300);
+  }
   S.owner = load('wl_owner', null);
   setOwnerUi();
+
+  // Запасной вход владельца: 5 быстрых нажатий на слово «WISHLIST» над заголовком
+  var taps = [];
+  $('.eyebrow').addEventListener('click', function () {
+    var now = Date.now(); taps = taps.filter(function (t) { return now - t < 2500; }); taps.push(now);
+    if (taps.length < 5) return;
+    taps = [];
+    if (S.owner) { toast('Вы уже в режиме владельца'); return; }
+    var link = prompt('Вход для владельца.\nВставьте секретную ссылку из таблицы (Wishlist → Ссылки):');
+    var k = String(link || '').match(/owner=([A-Za-z0-9]{20,})/) || String(link || '').trim().match(/^([A-Za-z0-9]{20,})$/);
+    if (!k) { if (link) toast('Это не похоже на секретную ссылку'); return; }
+    save('wl_owner', k[1]); S.owner = k[1]; S.preview = false; setOwnerUi();
+    refresh().then(function () { if (S.owner) toast('Режим владельца включён'); });
+  });
 
   if (!/^https:\/\/script\.google(usercontent)?\.com\//.test(API) && !window.WISHLIST_DEV) {
     $('#content').innerHTML = '<div class="setup"><h3>Почти готово</h3><p>Откройте файл <code>config.js</code> в репозитории на GitHub и вставьте адрес веб-приложения Apps Script (заканчивается на <code>/exec</code>). Его можно взять в таблице: меню <b>Wishlist → Ссылки</b>.</p></div>';
