@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7F1E8"/><stop offset="1" stop-color="#EFE4D6"/></linearGradient>
+    <linearGradient id="box" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#CC8562"/><stop offset="1" stop-color="#B86C4B"/></linearGradient>
+    <linearGradient id="lid" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B9694A"/><stop offset="1" stop-color="#A65C3D"/></linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <g transform="translate(256 268) scale(1.16) translate(-256 -290)">
+  <ellipse cx="256" cy="398" rx="128" ry="12" fill="#2C2520" opacity=".07"/>
+  <rect x="150" y="262" width="212" height="134" rx="18" fill="url(#box)"/>
+  <rect x="132" y="218" width="248" height="58" rx="16" fill="url(#lid)"/>
+  <rect x="150" y="276" width="212" height="10" fill="#2C2520" opacity=".08"/>
+  <rect x="239" y="218" width="34" height="178" fill="#7C3B24"/>
+  <path d="M256 214 C 226 160, 166 150, 160 186 C 155 216, 206 224, 256 214 Z" fill="#7C3B24"/>
+  <path d="M256 214 C 286 160, 346 150, 352 186 C 357 216, 306 224, 256 214 Z" fill="#7C3B24"/>
+  <path d="M256 212 C 232 176, 190 170, 186 190 C 183 206, 214 212, 256 212 Z" fill="#9A4C30"/>
+  <path d="M256 212 C 280 176, 322 170, 326 190 C 329 206, 298 212, 256 212 Z" fill="#9A4C30"/>
+  <path d="M248 216 L 222 268 L 240 262 L 248 280 Z" fill="#7C3B24"/>
+  <path d="M264 216 L 290 268 L 272 262 L 264 280 Z" fill="#7C3B24"/>
+  <rect x="238" y="198" width="36" height="30" rx="12" fill="#6A311D"/>
+  <circle cx="384" cy="186" r="7" fill="#D7AE84"/>
+  <circle cx="122" cy="168" r="5" fill="#D7AE84"/>
+  <path d="M392 112 l6 14 14 6 -14 6 -6 14 -6 -14 -14 -6 14 -6z" fill="#D7AE84"/>
+  </g>
+</svg>

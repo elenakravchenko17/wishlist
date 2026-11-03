@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Wishlist</title>
+  <meta name="description" content="Мой список желаний">
+  <meta name="theme-color" content="#F5F0E8">
+  <meta name="robots" content="noindex">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Wishlist">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <p class="eyebrow">Wishlist</p>
+      <h1 id="pageTitle">Мой Wishlist</h1>
+      <p id="pageSubtitle" class="subtitle"></p>
+      <div class="hero-actions" id="guestActions">
+        <button class="btn btn-ghost" id="btnMoney" type="button">Подарить деньги</button>
+      </div>
+      <span class="owner-badge" id="ownerBadge" hidden>Режим владельца</span>
+    </div>
+  </header>
+
+  <nav class="tabs-bar" aria-label="Разделы">
+    <div class="wrap tabs" id="tabs" role="tablist">
+      <button role="tab" data-tab="all" class="tab is-active">Все</button>
+      <button role="tab" data-tab="Постоянные" class="tab">Постоянные</button>
+      <button role="tab" data-tab="Ежемесячные" class="tab">Ежемесячные</button>
+      <button role="tab" data-tab="Редкие" class="tab">Редкие</button>
+      <button role="tab" data-tab="done" class="tab" id="tabDone">Исполненные</button>
+      <button role="tab" data-tab="hidden" class="tab" id="tabHidden" hidden>Скрытые</button>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <section class="toolbar" id="toolbar">
+      <label class="search">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="q" type="search" placeholder="Поиск по названию или бренду" autocomplete="off">
+      </label>
+      <div class="selects">
+        <select id="sub" aria-label="Подкатегория"><option value="">Все подкатегории</option></select>
+        <select id="sort" aria-label="Сортировка">
+          <option value="priority">По приоритету</option>
+          <option value="new">Сначала новые</option>
+          <option value="price-asc">Цена: по возрастанию</option>
+          <option value="price-desc">Цена: по убыванию</option>
+        </select>
+        <label class="toggle"><input type="checkbox" id="onlyFree"><span>Только свободные</span></label>
+      </div>
+    </section>
+
+    <p class="legend" id="legend">
+      <span class="pill st-free">Свободно</span>
+      <span class="pill st-seen">Присмотрено</span>
+      <span class="pill st-taken">Уже дарят</span>
+      <span class="pill st-recurring">Можно дарить снова</span>
+    </p>
+
+    <div id="content" aria-live="polite">
+      <div class="grid"><div class="card skeleton"></div><div class="card skeleton"></div><div class="card skeleton"></div></div>
+    </div>
+  </main>
+
+  <footer class="foot wrap"><p id="footNote">Отметка «Подарю это» видна всем как «Уже дарят». Чтобы сохранить сюрприз, владелец списка видит имя, только если сам нажмёт «показать».</p></footer>
+
+  <div class="owner-bar" id="ownerBar" hidden>
+    <button type="button" class="add" id="obAdd">＋ Желание</button>
+    <button type="button" id="obHistory">История</button>
+    <button type="button" id="obSettings">Настройки</button>
+    <button type="button" id="obPreview" title="Как видят гости" aria-label="Как видят гости">👁</button>
+  </div>
+
+  <div class="overlay" id="overlay" hidden>
+    <div class="sheet" id="sheet" role="dialog" aria-modal="true">
+      <button class="close" id="sheetClose" type="button" aria-label="Закрыть">×</button>
+      <div id="sheetBody"></div>
+    </div>
+  </div>
+  <div class="toast" id="toast" role="status" hidden></div>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
